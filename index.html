@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Geocoding service</title>
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+    <meta charset="utf-8">
+    <style>
+        #map {
+            height: 100%;
+        }
+        html, body {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+        }
+        #floating-panel {
+            position: absolute;
+            top: 10px;
+            left: 25%;
+            z-index: 5;
+            background-color: #fff;
+            padding: 5px;
+            border: 1px solid #999;
+            text-align: center;
+            font-family: 'Roboto','sans-serif';
+            line-height: 30px;
+            padding-left: 10px;
+        }
+        #results-panel {
+            visibility: hidden;
+            position: absolute;
+            top: 90px;
+            left: 25%;
+            z-index: 5;
+            background-color: #fff;
+            padding: 5px;
+            border: 1px solid #999;
+            text-align: center;
+            font-family: 'Roboto','sans-serif';
+            line-height: 30px;
+            padding-left: 10px;
+            font-size: 10pt;
+        }
+        p {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="floating-panel">
+    <p>Enter a location</p>
+    <input id="address" type="textbox" value="Sydney, NSW">
+    <input id="submit" type="button" value="Geocode">
+</div>
+<div id="results-panel">
+    <p id="coordinates"></p>
+</div>
+<div id="map"></div>
+<script>
+    function initMap() {
+        var map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 8,
+            center: {lat: -34.397, lng: 150.644}
+        });
+        var geocoder = new google.maps.Geocoder();
+
+        document.getElementById('submit').addEventListener('click', function() {
+            geocodeAddress(geocoder, map);
+        });
+    }
+
+    function geocodeAddress(geocoder, resultsMap) {
+        var address = document.getElementById('address').value;
+        geocoder.geocode({'address': address}, function(results, status) {
+            if (status === 'OK') {
+                resultsMap.setCenter(results[0].geometry.location);
+                document.getElementById("results-panel").style.visibility = "visible";
+                document.getElementById("coordinates").innerHTML = "Coordinates: (" + results[0].geometry.location.lat()
+                    + ", " + results[0].geometry.location.lng() + ")";
+                var marker = new google.maps.Marker({
+                    map: resultsMap,
+                    position: results[0].geometry.location
+                });
+            } else {
+                alert('Geocode was not successful for the following reason: ' + status);
+            }
+        });
+    }
+</script>
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDq0_3DXYjqrT2LxE6PJUC6bTUmRfYFvUA&callback=initMap">
+</script>
+</body>
+</html>
